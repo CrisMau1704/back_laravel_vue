@@ -1,0 +1,30 @@
+GET http://127.0.0.1:8000/api/usuario
+
+
+###guardar usuario
+POST http://127.0.0.1:8000/api/usuario
+Accept: application/json
+Content-Type: application/json 
+
+{
+    "name":"ximenas",
+    "email":"ximenas@gmail.com",
+    "password":"123456"
+}
+
+###mostrar usuario
+GET http://127.0.0.1:8000/api/usuario/1
+
+###ACTUALIZAR USUARIO
+PUT http://127.0.0.1:8000/api/usuario/4
+Accept: application/json
+Content-Type: application/json 
+
+{
+    "name":"XIMENAsss",
+    "email":"cris@gmail.com",
+    "password":"123"
+}
+
+###eliminar usuario
+DELETE http://127.0.0.1:8000/api/usuario/5
