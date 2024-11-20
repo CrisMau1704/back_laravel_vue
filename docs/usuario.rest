@@ -1,5 +1,8 @@
-GET http://127.0.0.1:8000/api/usuario
 
+### lista de usuarios
+GET http://127.0.0.1:8000/api/usuario
+Accept: application/json
+Authorization: Beaber 14|Kuhm35M0BOEfLBm5qMJcDv8XEsP1G5Kh0LjqcyFP4d699e30
 
 ###guardar usuario
 POST http://127.0.0.1:8000/api/usuario
@@ -7,9 +10,9 @@ Accept: application/json
 Content-Type: application/json 
 
 {
-    "name":"ximenas",
-    "email":"ximenas@gmail.com",
-    "password":"123456"
+    "name":"cristian",
+    "email":"cristian@gmail.com",
+    "password":"123"
 }
 
 ###mostrar usuario

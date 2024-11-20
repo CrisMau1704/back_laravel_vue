@@ -42,4 +42,22 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function pedidos(){
+        return $this->hasMany(Pedido::class);
+    }
+
+    public function persona(){
+        return $this->hasMany(Persona::class);
+    }
+
+    public function roles(){
+        return $this->belongsToMany(Role::class)->withTimestamps();
+    }
+
+    //crear permisos
+    public function permisos(){
+        return $this->roles->map->permisos->flatten()->pluck("nombre")->unique();
+        // array listar categoria , guardar producto
+        }
 }
