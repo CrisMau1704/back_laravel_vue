@@ -44,7 +44,7 @@ Route::prefix("v1/auth")->group(function(){
     });
 });
 
-//login
+//login de cristian
 Route::get("/no-autorizado", function(){
     return["message" => "No estas autorizado para ver esta pagina"];
 })->name('login');
