@@ -1,36 +1,33 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// Rutas protegidas por middleware de autenticación
+Route::middleware('auth:sanctum')->group(function() {
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    // Rutas para el CRUD de usuarios
+    Route::get("/usuario", [UserController::class, "funListar"]); 
+    Route::post("/usuario", [UserController::class, "funGuardar"]);
+    Route::get("/usuario/{id}", [UserController::class, "funMostrar"]);
+    Route::put("/usuario/{id}", [UserController::class, "funModificar"]); 
+    Route::delete("/usuario/{id}", [UserController::class, "funEliminar"]);
+
+    Route::apiResource("/persona", PersonaController::class);
+    Route::apiResource('/categoria', CategoriaController::class);
+    
+    // CRUD de productos con el endpoint adicional para subir imágenes
+    Route::apiResource('/producto', ProductoController::class);
+  
+    // routes/web.php
+    Route::post('/productos/{id}/imagen', [ProductoController::class, 'updateImage'])->name('productos.updateImage');
+
 });
-
-
-
-Route::middleware('auth:sanctum')->group(function(){
-//rutas para el CRUD de usuarios
-
-Route::get("/usuario", [UserController::class, "funListar"]); //->middleware(["auth:sanctum"]);
-Route::post("/usuario", [UserController::class, "funGuardar"]);
-Route::get("/usuario/{id}", [UserController::class, "funMostrar"]);
-Route::put("/usuario/{id}", [UserController::class, "funModificar"]); 
-Route::delete("/usuario/{id}", [UserController::class, "funEliminar"]);
-
-Route::apiResource("/persona", PersonaController::class);
-});
-
-
-
-Route::apiResource("/producto", ProductoController::class);
-
-
 
 Route::prefix("v1/auth")->group(function(){
 
@@ -40,11 +37,12 @@ Route::prefix("v1/auth")->group(function(){
     Route::middleware('auth:sanctum')->group(function(){
         Route::get("profile", [AuthController::class, "funPerfil"]);
         Route::post("logout", [AuthController::class, "funSalir"]);
-
+        
     });
 });
 
-//login de cristian hola 
+// Ruta para manejo de acceso no autorizado
 Route::get("/no-autorizado", function(){
-    return["message" => "No estas autorizado para ver esta pagina"];
+    return response()->json(["message" => "No estás autorizado para ver esta página"], 403);
 })->name('login');
+

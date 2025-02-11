@@ -9,14 +9,36 @@ class Producto extends Model
 {
     use HasFactory;
 
-    public function categoria(){
+    /**
+     * Relación con la tabla `categorias`.
+     */
+    public function categoria()
+    {
         return $this->belongsTo(Categoria::class);
     }
 
-    public function pedidos(){
+    /**
+     * Relación con la tabla `pedidos`.
+     */
+    public function pedidos()
+    {
         return $this->belongsTo(Pedido::class)
-                    ->withPivot(["cantidad"])
+                    ->withPivot(['cantidad'])
                     ->withTimestamps();
-
     }
+
+    /**
+     * Los atributos que se pueden asignar de forma masiva.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'nombre',
+        'stock',
+        'precio',
+        'descripcion',
+        'estado',
+        'categoria_id',
+        'imagen',
+    ];
 }
