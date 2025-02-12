@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function() {
 
     // Rutas para el CRUD de usuarios
-    Route::get("/usuario", [UserController::class, "funListar"]); 
+    Route::get('/usuario', [UserController::class, 'index']);
+ 
     Route::post("/usuario", [UserController::class, "funGuardar"]);
     Route::get("/usuario/{id}", [UserController::class, "funMostrar"]);
     Route::put("/usuario/{id}", [UserController::class, "funModificar"]); 

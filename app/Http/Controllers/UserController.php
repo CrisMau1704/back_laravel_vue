@@ -8,13 +8,21 @@ use App\Models\User;
 class UserController extends Controller
 {
     //index
-    public function funListar(){
-        //return User:: get();
-
-        $usuarios = User::get();
-        return response()->json($usuarios, 200);
-        
-    }
+    public function index(Request $request)
+     {
+         $limit = isset($request->limit) ? $request->limit : 10;
+     
+         if (isset($request->q)) {
+             $usuarios = User::where('name', "like", "%" . $request->q . "%")
+                 ->orderBy("id", "desc")
+                 ->paginate($limit);
+         } else {
+             $usuarios = User::orderBy("id", "desc")->paginate($limit);
+         }
+     
+         // Devuelve la respuesta correcta para paginación
+         return response()->json($usuarios, 200);
+     }
 
     //store
     public function funGuardar(Request $request){
