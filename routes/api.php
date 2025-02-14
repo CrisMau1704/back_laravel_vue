@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductoController;
@@ -25,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function() {
     // CRUD de productos con el endpoint adicional para subir imágenes
     Route::apiResource('/producto', ProductoController::class);
   
+    //buscar cliente 
+    Route::get('/cliente/buscar-cliente',[ClienteController::class,"buscarCliente"]);
+
     // routes/web.php
     Route::post('/productos/{id}/imagen', [ProductoController::class, 'updateImage'])->name('productos.updateImage');
 
