@@ -20,19 +20,11 @@ class ClienteController extends Controller
     public function buscarCliente(Request $request)
     {
         // Verifica si se envió el parámetro 'q'
-        if (!$request->has('q')) {
-            return response()->json(['error' => "Falta el parámetro 'q'"], 400);
-        }
-    
-        // Busca clientes que coincidan con el nombre
-        $clientes = Cliente::where('nombre_completo', 'like', "%" . $request->q . "%")->get();
-    
-        // Si no hay resultados, devuelve un error 404
-        if ($clientes->isEmpty()) {
-            return response()->json(['error' => "Cliente no encontrado"], 404);
-        }
-    
-        return response()->json($clientes, 200);
+       if(isset($request->q)){
+        $cliente = Cliente::where('nombre_completo', "like", "%".$request->q."%")
+                            ->first();
+                            return response()->json($cliente,200);
+       }
     }
     
 
@@ -41,7 +33,20 @@ class ClienteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            "nombre_completo" => "required"
+        ]);
+        //guardar
+        $clie = new Cliente();
+        $clie->nombre_completo = $request->nombre_completo;
+        $clie->ci_nit = $request->ci_nit;
+        $clie->telefono = $request->telefono;
+        $clie->observacion = $request->observacion;
+
+        $clie->save();
+
+        //responder
+        return response()->json($clie, 201);
     }
 
     /**

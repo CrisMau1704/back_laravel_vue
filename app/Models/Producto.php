@@ -19,11 +19,12 @@ class Producto extends Model
 
     /**
      * Relación con la tabla `pedidos`.
+     * Cambiar a BelongsToMany en lugar de BelongsTo.
      */
     public function pedidos()
     {
-        return $this->belongsTo(Pedido::class)
-                    ->withPivot(['cantidad'])
+        return $this->belongsToMany(Pedido::class)
+                    ->withPivot('cantidad') // Aquí estamos especificando la columna adicional
                     ->withTimestamps();
     }
 
@@ -42,3 +43,4 @@ class Producto extends Model
         'imagen',
     ];
 }
+
