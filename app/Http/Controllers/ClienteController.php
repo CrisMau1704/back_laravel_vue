@@ -16,16 +16,18 @@ class ClienteController extends Controller
 
     
     }
-
     public function buscarCliente(Request $request)
     {
         // Verifica si se envió el parámetro 'q'
-       if(isset($request->q)){
-        $cliente = Cliente::where('nombre_completo', "like", "%".$request->q."%")
-                            ->first();
-                            return response()->json($cliente,200);
-       }
+        if(isset($request->q)){
+            $cliente = Cliente::where('nombre_completo', 'like', "%".$request->q."%")->first();
+            return response()->json($cliente, 200);
+        }
+    
+        // Retornar una respuesta en caso de que no se envíe 'q'
+        return response()->json(['error' => 'Parámetro q no proporcionado'], 400);
     }
+    
     
 
     /**
