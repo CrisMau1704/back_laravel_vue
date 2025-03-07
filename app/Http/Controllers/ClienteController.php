@@ -10,12 +10,23 @@ class ClienteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($request)
-    {
-        
+    public function index(Request $request)
+     {
+         $limit = isset($request->limit) ? $request->limit : 10;
+     
+         if (isset($request->q)) {
+             $clientes = Cliente::where('nombre_completo', "like", "%" . $request->q . "%")
+                 ->orderBy("id", "desc")
+                 ->paginate($limit);
+         } else {
+             $clientes = Cliente::orderBy("id", "desc")->paginate($limit);
+         }
+     
+         // Devuelve la respuesta correcta para paginación
+         return response()->json($clientes, 200);
+     }
+     
 
-    
-    }
     public function buscarCliente(Request $request)
     {
         // Verifica si se envió el parámetro 'q'
@@ -43,8 +54,6 @@ class ClienteController extends Controller
         $clie->nombre_completo = $request->nombre_completo;
         $clie->ci_nit = $request->ci_nit;
         $clie->telefono = $request->telefono;
-        $clie->observacion = $request->observacion;
-
         $clie->save();
 
         //responder
@@ -56,15 +65,22 @@ class ClienteController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $clie = Cliente::findOrFail($id);
+        return response()->json($clie);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
+    public function update(Request $request, $id){
+        $clie = Cliente::find($id);
+        $clie->nombre_completo = $request->nombre_completo;
+        $clie->ci_nit = $request->ci_nit;
+        $clie->telefono = $request->telefono;
+        $clie->update();
+
+        return response()->json(["mensaje" => "cliente actualizado correctamente"], 201);
+    
     }
 
     /**
