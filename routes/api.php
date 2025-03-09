@@ -7,6 +7,7 @@ use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProveedorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource("/pedido", PedidoController::class);
     Route::apiResource('/cliente', ClienteController::class);
+    Route::apiResource('/proveedor', ProveedorController::class);
+   
+ 
+
+
 });
 
 Route::prefix("v1/auth")->group(function () {

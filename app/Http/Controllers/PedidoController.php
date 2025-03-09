@@ -12,33 +12,27 @@ class PedidoController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $limit = isset($request->limit) ? $request->limit : 10;
-        $fi = isset($request->fi) ? $request->fi : "-";
-        $ff = isset($request->ff) ? $request->ff : "-";
-        if (isset($request->q)) {
-            $pedidos = Pedido::where('fecha', "like", "%" . $request->q . "%");
-            if ($fi && $ff) {
-                $pedidos = $pedidos->where('fecha', '>=', $fi)
-                    ->where('fecha', '<=', $ff);
-            }
+{
+    $limit = isset($request->limit) ? $request->limit : 10;
 
-            $pedidos = $pedidos->orderBy("id", "desc")
-                ->with(["cliente", "productos"])
-                ->paginate($limit);
-        } else {
-            
-            $pedidos = Pedido::orderBy("id", "desc");
-            if ($fi && $ff) {
-                $pedidos = $pedidos->where('fecha', '>=', $fi)
-                    ->where('fecha', '<=', $ff);
-            }
-                
-            $pedidos = $pedidos->with(["cliente", "productos"])->paginate($limit);
-        }
-
-        return response()->json($pedidos, 200);
+    // Si existe el parámetro de búsqueda 'q', se realiza la búsqueda
+    if (isset($request->q)) {
+        $pedidos = Pedido::where('fecha', "like", "%" . $request->q . "%");
+        
+        // Se ordenan los resultados y se cargan las relaciones necesarias
+        $pedidos = $pedidos->orderBy("id", "desc")
+            ->with(["cliente", "productos"])
+            ->paginate($limit);
+    } else {
+        // Si no hay parámetro de búsqueda 'q', solo se ordenan los resultados
+        $pedidos = Pedido::orderBy("id", "desc")
+            ->with(["cliente", "productos"])
+            ->paginate($limit);
     }
+
+    return response()->json($pedidos);
+}
+
 
     /**
      * Store a newly created resource in storage.
