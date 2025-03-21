@@ -8,8 +8,12 @@ use App\Http\Controllers\PersonaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\AreaController;
+use App\Http\Controllers\TareaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+
 
 // Rutas protegidas por middleware de autenticación
 Route::middleware('auth:sanctum')->group(function () {
@@ -17,8 +21,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //buscar cliente 
     Route::get('/cliente/buscar-cliente', [ClienteController::class, "buscarCliente"]);
 
-    // routes/web.php
-    Route::post('/productos/{id}/imagen', [ProductoController::class, 'updateImage'])->name('productos.updateImage');
+
+
 
     // Rutas para el CRUD de usuarios
     Route::get('/usuario', [UserController::class, 'index']);
@@ -37,10 +41,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource("/pedido", PedidoController::class);
     Route::apiResource('/cliente', ClienteController::class);
     Route::apiResource('/proveedor', ProveedorController::class);
-   
- 
+
+    Route::apiResource('/area', AreaController::class);
 
 
+    Route::apiResource('tarea', TareaController::class);
 });
 
 Route::prefix("v1/auth")->group(function () {

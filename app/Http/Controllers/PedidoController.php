@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pedido;
+use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,38 +39,52 @@ class PedidoController extends Controller
      * Store a newly created resource in storage.
      *GUARDAR PEDIDO*/
     public function store(Request $request)
-    {
-        // Validar la entrada
-        $request->validate([
-            "cliente_id" => "required",
-            "productos" => "required",
-        ]);
+{
+    // Validar la entrada
+    $request->validate([
+        "cliente_id" => "required",
+        "productos" => "required|array", // Asegurarse de que los productos sean un array
+    ]);
 
-        // Guardar el pedido con estado 1 (en proceso)
-        $pedido = new Pedido();
-        $pedido->fecha = date("Y-m-d H:i:s");
-        $pedido->cliente_id = $request->cliente_id;
-        $pedido->estado = 1;
-        $pedido->observacion = $request->observacion;
-        $pedido->user_id = Auth::id();
-        $pedido->save();
+    // Guardar el pedido con estado 1 (en proceso)
+    $pedido = new Pedido();
+    $pedido->fecha = date("Y-m-d H:i:s");
+    $pedido->cliente_id = $request->cliente_id;
+    $pedido->estado = 1; // Estado 1 para "en proceso"
+    $pedido->observacion = $request->observacion;
+    $pedido->user_id = Auth::id();
+    $pedido->save();
 
-        // Asignar productos al pedido
-        $productos = $request->productos;  // Asegúrate de que los productos vengan en el formato adecuado
-        foreach ($productos as $prod) {
-            $producto_id =  $prod["producto_id"];
-            $cantidad =  $prod["cantidad"];
+    // Asignar productos al pedido y actualizar stock
+    $productos = $request->productos;  // Asegúrate de que los productos vengan en el formato adecuado
+    foreach ($productos as $prod) {
+        $producto_id =  $prod["producto_id"];
+        $cantidad =  $prod["cantidad"];
 
-            // Usar attach correctamente
+        // Verificar que haya suficiente stock
+        $producto = Producto::find($producto_id);
+        if ($producto && $producto->stock >= $cantidad) {
+            // Disminuir el stock del producto
+            $producto->stock -= $cantidad;
+            $producto->save();
+
+            // Usar attach correctamente para asignar productos al pedido
             $pedido->productos()->attach($producto_id, ['cantidad' => $cantidad]);
+        } else {
+            // Si no hay suficiente stock, retornar un error
+            return response()->json([
+                "message" => "No hay suficiente stock para el producto: " . $producto->nombre
+            ], 400);  // 400 para Bad Request
         }
-
-        // Actualizar el estado a completado (opcional, si necesitas cambiar el estado al finalizar el pedido)
-        $pedido->estado = 2;
-        $pedido->update();
-
-        return response()->json(["message" => "Pedido registrado"], 201); //201 significa que se guardó correctamente
     }
+
+    // Actualizar el estado del pedido a completado (opcional, si lo necesitas)
+    $pedido->estado = 2; // Estado 2 para "completado"
+    $pedido->update();
+
+    return response()->json(["message" => "Pedido registrado con éxito"], 201); //201 significa que se guardó correctamente
+}
+
 
 
     /**
