@@ -6,6 +6,7 @@ use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str; // Importa la clase Str para generar cadenas aleatorias
 
 class ProductoController extends Controller
 {
@@ -65,55 +66,21 @@ class ProductoController extends Controller
         return response()->json(["message" => "Producto registrado"], 201);
     }
     
-    
-
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
-    {
-        // Validación de los campos
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'stock' => 'required|integer',
-            'precio' => 'required|numeric',
-            'descripcion' => 'nullable|string',
-        ]);
-
-        // Actualización del producto
-        $producto = Producto::findOrFail($id);
-        $producto->update($validated); // Solo actualiza los datos
-
-        // Retornar el producto actualizado como respuesta
-        return response()->json($producto);
-    }
-
-    public function updateImage($id, Request $request)
 {
-    $request->validate([
-        'imagen' => 'required|image|mimes:jpg,jpeg,png,bmp,gif,svg|max:2048',  // Valida la imagen
-    ]);
+    // Obtener los datos del request
+    $data = $request->all();
 
+    // Actualización del producto
     $producto = Producto::findOrFail($id);
+    $producto->update($data); // Actualiza los datos sin validación adicional
 
-    if ($request->hasFile('imagen')) {
-        // Eliminar la imagen anterior si existe
-        if ($producto->imagen && file_exists(public_path('storage/' . $producto->imagen))) {
-            unlink(public_path('storage/' . $producto->imagen));
-        }
-
-        // Guardar la nueva imagen
-        $imagePath = $request->file('imagen')->store('productos', 'public');
-        $producto->imagen = $imagePath;
-        $producto->save();
-
-        return response()->json([
-            'message' => 'Imagen actualizada correctamente',
-        ], 200);
-    }
-
-    return response()->json([
-        'message' => 'No se ha proporcionado ninguna imagen',
-    ], 400);
+    // Retornar el producto actualizado como respuesta
+    return response()->json($producto);
 }
-
 
     /**
      * Display the specified resource.
@@ -127,11 +94,15 @@ class ProductoController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $prod = Producto::findOrFail($id);
-        $prod->delete();
-
-        return response()->json(["message" => "Producto eliminado"]);
+    
+        // En lugar de eliminar físicamente, solo actualizamos el estado a 0
+        $prod->estado = 0;
+        $prod->save();
+    
+        return response()->json(['message' => 'Producto eliminado (lógicamente)']);
     }
+
 }
