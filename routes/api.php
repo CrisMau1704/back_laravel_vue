@@ -9,10 +9,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\AreaController;
+use App\Http\Controllers\PlatoController;
 use App\Http\Controllers\TareaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\UserRoleController;
+use App\Http\Controllers\PedidoPlatoController;
 
 
 // Rutas protegidas por middleware de autenticación
@@ -20,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //buscar cliente 
     Route::get('/cliente/buscar-cliente', [ClienteController::class, "buscarCliente"]);
-
+    Route::get('/proveedor/buscar-proveedor', [ProveedorController::class, "buscarProveedor"]);
 
 
 
@@ -46,6 +48,29 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::apiResource('tarea', TareaController::class);
+
+    Route::get('/users-with-roles', [UserRoleController::class, 'index']);
+    Route::get('/roles', [UserRoleController::class, 'getRoles']);
+    Route::post('/assign-roles', [UserRoleController::class, 'assignRoles']);
+
+    Route::apiResource('/plato', PlatoController::class);
+
+    Route::post('/productos/{id}/descontar', [ProductoController::class, 'descontarStock']);
+    Route::get('platos/{id}/productos', [PlatoController::class, 'getProductosPorPlato']);
+
+    
+    Route::post('/pedido/{pedidoId}/platos', [PedidoPlatoController::class, 'store']);
+
+    // routes/api.php
+    Route::get('plato/categoria/{categoriaId}', [PlatoController::class, 'platosPorCategoria']);
+
+
+
+
+
+
+
+
 });
 
 Route::prefix("v1/auth")->group(function () {

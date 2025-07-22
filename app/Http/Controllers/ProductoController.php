@@ -19,10 +19,10 @@ class ProductoController extends Controller
 
         if (isset($request->q)) {
             $productos = Producto::where('nombre', "like", "%" . $request->q . "%")
-                                    ->where("estado", true)
-                                    ->orderBy("id", "desc")
-                                    ->with(["categoria"])
-                                    ->paginate($limit);
+                ->where("estado", true)
+                ->orderBy("id", "desc")
+                ->with(["categoria"])
+                ->paginate($limit);
         } else {
             $productos = Producto::orderBy("id", "desc")->where("estado", true)->with(["categoria"])->paginate($limit);
         }
@@ -38,9 +38,9 @@ class ProductoController extends Controller
         $request->validate([
             'imagen' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
-    
+
         $estado = filter_var($request->estado, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
-    
+
         // Procesar y guardar la imagen
         $nombreImagen = null;
         if ($request->hasFile('imagen')) {
@@ -51,36 +51,36 @@ class ProductoController extends Controller
             // Imagen por defecto si no se proporciona
             $nombreImagen = 'default_image.png';
         }
-    
+
         // Guardar el producto
         $prod = new Producto();
         $prod->nombre = $request->nombre;
         $prod->stock = $request->stock;
-        $prod->precio = $request->precio;
-        $prod->descripcion = $request->descripcion;
+        $prod->precio_compra = $request->precio_compra;
+        $prod->unidad_medida = $request->unidad_medida;
         $prod->estado = $estado;
         $prod->categoria_id = $request->categoria_id;
         $prod->imagen = 'productos/' . $nombreImagen;
         $prod->save();
-    
+
         return response()->json(["message" => "Producto registrado"], 201);
     }
-    
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-{
-    // Obtener los datos del request
-    $data = $request->all();
+    {
+        // Obtener los datos del request
+        $data = $request->all();
 
-    // Actualización del producto
-    $producto = Producto::findOrFail($id);
-    $producto->update($data); // Actualiza los datos sin validación adicional
+        // Actualización del producto
+        $producto = Producto::findOrFail($id);
+        $producto->update($data); // Actualiza los datos sin validación adicional
 
-    // Retornar el producto actualizado como respuesta
-    return response()->json($producto);
-}
+        // Retornar el producto actualizado como respuesta
+        return response()->json($producto);
+    }
 
     /**
      * Display the specified resource.
@@ -97,12 +97,24 @@ class ProductoController extends Controller
     public function destroy($id)
     {
         $prod = Producto::findOrFail($id);
-    
+
         // En lugar de eliminar físicamente, solo actualizamos el estado a 0
         $prod->estado = 0;
         $prod->save();
-    
+
         return response()->json(['message' => 'Producto eliminado (lógicamente)']);
     }
+
+    /**
+     * Actualizar el stock de un producto.
+     */
+    /**
+     * Actualizar el stock de un producto.
+     */
+    // ProductoController.php
+
+ 
+
+
 
 }

@@ -42,7 +42,7 @@ class ProveedorController extends Controller
     {
         // Validación
         $request->validate([
-            "nombre" => "required|unique:proveedores,nombre", // Verificar que el nombre sea único en la tabla 'proveedores'
+            "nombre" => "required" // Verificar que el nombre sea único en la tabla 'proveedores'
         ]);
         // Crear un nuevo proveedor
         $provee = new Proveedor();
@@ -51,8 +51,8 @@ class ProveedorController extends Controller
         $provee->telefono = $request->telefono;
         $provee->email = $request->email;
         $provee->direccion = $request->direccion;
-        $provee->ruc = $request->ruc;
-        $provee->website = $request->website;
+        $provee->ci_nit = $request->ci_nit;
+     
         
         // Guardar en la base de datos
         $provee->save();
@@ -90,8 +90,8 @@ class ProveedorController extends Controller
         $provee->telefono = $request->telefono;
         $provee->email = $request->email;
         $provee->direccion = $request->direccion;
-        $provee->ruc = $request->ruc;
-        $provee->website = $request->website;
+        $provee->ci_nit = $request->ci_nit;
+   
         $provee->update();
 
         return response()->json(["mensaje" => "cliente actualizado correctamente"], 201);
@@ -109,6 +109,18 @@ class ProveedorController extends Controller
         $proveedor->save();
     
         return response()->json(['message' => 'Proveedor eliminado (lógicamente)']);
+    }
+
+    public function buscarProveedor(Request $request)
+    {
+        // Verifica si se envió el parámetro 'q'
+        if(isset($request->q)){
+            $cliente = Proveedor::where('ci_nit', 'like', "%".$request->q."%")->first();
+            return response()->json($cliente, 200);
+        }
+    
+        // Retornar una respuesta en caso de que no se envíe 'q'
+        return response()->json(['error' => 'Parámetro q no proporcionado'], 400);
     }
     
 

@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    use HasFactory;
+    protected $fillable = ['nombre']; // Asegúrate de que coincida con tu estructura de BD
 
-    public function users(){
-        return $this->belongsToMany(User::class)->withTimestamps(); //1 a muchos 
+    public function users() {
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 
-    public function Permisos(){
-        return $this->belongsToMany(Permiso::class)->withTimestamps(); //1 a muchos 
+    // Si tienes permisos, añade esta relación (ajusta según tu esquema)
+    public function permisos() {
+        return $this->hasMany(Permiso::class);
     }
 }

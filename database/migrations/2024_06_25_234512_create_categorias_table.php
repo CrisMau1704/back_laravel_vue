@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('categorias', function (Blueprint $table) {
             $table->id();
             $table->string("nombre", 30);
-            $table->text("detalle")->nullable;
+            $table->text("detalle")->nullable(); // Agregado los paréntesis en nullable
             $table->timestamps();
         });
     }
