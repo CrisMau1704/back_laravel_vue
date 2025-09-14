@@ -22,21 +22,28 @@ class Producto extends Model
      */
     public function pedidos()
     {
-        return $this->belongsTo(Pedido::class)
-                    ->withPivot(['cantidad'])
+        return $this->belongsToMany(Pedido::class)
+                    ->withPivot('cantidad')
                     ->withTimestamps();
     }
 
     /**
-     * Los atributos que se pueden asignar de forma masiva.
-     *
-     * @var array
+     * Relación con la tabla `platos` (muchos a muchos).
+     */
+    public function platos()
+    {
+        return $this->belongsToMany(Plato::class, 'plato_producto', 'id_producto', 'id_plato')
+                    ->withPivot('cantidad_usada');
+    }
+
+    /**
+     * Atributos que se pueden asignar de forma masiva.
      */
     protected $fillable = [
         'nombre',
         'stock',
-        'precio',
-        'descripcion',
+        'precio_compra',
+        'unidad_medida',
         'estado',
         'categoria_id',
         'imagen',

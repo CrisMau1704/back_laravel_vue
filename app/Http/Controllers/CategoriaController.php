@@ -18,7 +18,8 @@ class CategoriaController extends Controller
      
          if (isset($request->q)) {
              $categorias = Categoria::where('nombre', "like", "%" . $request->q . "%")
-                 ->orderBy("id", "desc")
+             ->where("estado", true)    
+             ->orderBy("id", "desc")
                  ->paginate($limit);
          } else {
              $categorias = Categoria::orderBy("id", "desc")->paginate($limit);
@@ -80,10 +81,13 @@ class CategoriaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
         $categoria = Categoria::findOrFail($id);
-        $categoria->delete();
-        return response()->json(["message" => "Categoria eliminada"], 200);
+        // En lugar de eliminar físicamente, solo actualizamos el estado a 0
+        $categoria->estado = 0;
+        $categoria->save();
+    
+        return response()->json(['message' => 'Categoria eliminado (lógicamente)']);
     }
 }

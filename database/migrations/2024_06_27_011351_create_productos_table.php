@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
-            $table->string("nombre",200);
+            $table->string("nombre", 200);
             $table->integer("stock")->default(0);
-            $table->decimal("precio", 13, 2);
-            $table->text("descripcion")->nullable();
-            $table->string("imagen")->nullable();
+            $table->decimal("precio_compra", 13, 2);
+            $table->text("unidad_medida")->nullable();
+            $table->string("imagen")->nullable(); // Puedes agregar default(null) si prefieres ser explícito
             $table->boolean("estado")->default(true);
-            $table->bigInteger("categoria_id")->unsigned();
-            $table->foreign("categoria_id")->references("id")->on("categorias");
+            $table->unsignedBigInteger("categoria_id"); // Mejor usar unsignedBigInteger
+            $table->foreign("categoria_id")->references("id")->on("categorias")->onDelete('cascade'); // Asegura que se eliminen productos si la categoría se elimina
             $table->timestamps();
         });
     }
