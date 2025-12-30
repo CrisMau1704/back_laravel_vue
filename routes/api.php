@@ -1,32 +1,43 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CategoriaController;
-use App\Http\Controllers\ClienteController;
-use App\Http\Controllers\PedidoController;
-use App\Http\Controllers\PersonaController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\ProductoController;
-use App\Http\Controllers\ProveedorController;
-use App\Http\Controllers\AreaController;
-use App\Http\Controllers\PlatoController;
-use App\Http\Controllers\TareaController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EstudianteController;
+use App\Http\Controllers\ModalidadController;
+use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\InscripcionController;
+use App\Http\Controllers\AsistenciaController;
+use App\Http\Controllers\SucursalController;
+use App\Http\Controllers\EntrenadorController;
+use App\Http\Controllers\DisciplinaController;
+
 use App\Http\Controllers\UserRoleController;
-use App\Http\Controllers\PedidoPlatoController;
+use App\Http\Controllers\UserController;
 
+/*
+|--------------------------------------------------------------------------
+| AUTH
+|--------------------------------------------------------------------------
+*/
+Route::prefix('v1/auth')->group(function () {
 
-// Rutas protegidas por middleware de autenticación
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('profile', [AuthController::class, 'profile']);
+        Route::post('logout', [AuthController::class, 'logout']);
+    });
+});
+
+/*
+|--------------------------------------------------------------------------
+| RUTAS PROTEGIDAS
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:sanctum')->group(function () {
 
-    //buscar cliente 
-    Route::get('/cliente/buscar-cliente', [ClienteController::class, "buscarCliente"]);
-    Route::get('/proveedor/buscar-proveedor', [ProveedorController::class, "buscarProveedor"]);
-
-
-
-    // Rutas para el CRUD de usuarios
+        // Rutas para el CRUD de usuarios
     Route::get('/usuario', [UserController::class, 'index']);
 
     Route::post("/usuario", [UserController::class, "funGuardar"]);
@@ -34,57 +45,61 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put("/usuario/{id}", [UserController::class, "funModificar"]);
     Route::delete("/usuario/{id}", [UserController::class, "funEliminar"]);
 
-    Route::apiResource("/persona", PersonaController::class);
-    Route::apiResource('/categoria', CategoriaController::class);
 
-    // CRUD de productos con el endpoint adicional para subir imágenes
-    Route::apiResource('/producto', ProductoController::class);
+    Route::apiResource('estudiantes', EstudianteController::class);
 
-    Route::apiResource("/pedido", PedidoController::class);
-    Route::apiResource('/cliente', ClienteController::class);
-    Route::apiResource('/proveedor', ProveedorController::class);
+    Route::apiResource('sucursales', SucursalController::class);
 
-    Route::apiResource('/area', AreaController::class);
+     Route::apiResource('entrenadores', EntrenadorController::class);
+
+    Route::apiResource('modalidades', ModalidadController::class);
+
+    Route::apiResource('disciplinas', DisciplinaController::class);
+
+    // Rutas para horarios
+Route::prefix('horarios')->group(function () {
+    Route::get('/', [HorarioController::class, 'index']);
+    Route::post('/', [HorarioController::class, 'store']);
+    Route::get('/disponibles', [HorarioController::class, 'horariosDisponibles']);
+    Route::get('/por-dia', [HorarioController::class, 'horariosPorDia']);
+    Route::get('/estadisticas', [HorarioController::class, 'estadisticas']);
+    Route::get('/{id}', [HorarioController::class, 'show']);
+    Route::put('/{id}', [HorarioController::class, 'update']);
+    Route::delete('/{id}', [HorarioController::class, 'destroy']);
+    Route::put('/{id}/estado', [HorarioController::class, 'cambiarEstado']);
+    Route::post('/{id}/incrementar-cupo', [HorarioController::class, 'incrementarCupo']);
+    Route::post('/{id}/decrementar-cupo', [HorarioController::class, 'decrementarCupo']);
+}); 
+
+// routes/api.php
+
+Route::prefix('inscripciones')->group(function () {
+    Route::get('/', [InscripcionController::class, 'index']);
+    Route::post('/', [InscripcionController::class, 'store']);
+    Route::get('/{id}', [InscripcionController::class, 'show']);
+    Route::put('/{id}', [InscripcionController::class, 'update']);
+    Route::delete('/{id}', [InscripcionController::class, 'destroy']);
+    
+    // Rutas adicionales
+    Route::post('/{id}/horarios', [InscripcionController::class, 'asociarHorario']);
+    Route::delete('/{inscripcionId}/horarios/{horarioId}', [InscripcionController::class, 'desasociarHorario']);
+    Route::post('/{id}/renovar', [InscripcionController::class, 'renovar']);
+    Route::post('/verificar-vencimientos', [InscripcionController::class, 'verificarVencimientos']);
+});
 
 
-    Route::apiResource('tarea', TareaController::class);
-
-    Route::get('/users-with-roles', [UserRoleController::class, 'index']);
+        Route::get('/users-with-roles', [UserRoleController::class, 'index']);
     Route::get('/roles', [UserRoleController::class, 'getRoles']);
     Route::post('/assign-roles', [UserRoleController::class, 'assignRoles']);
-
-    Route::apiResource('/plato', PlatoController::class);
-
-    Route::post('/productos/{id}/descontar', [ProductoController::class, 'descontarStock']);
-    Route::get('platos/{id}/productos', [PlatoController::class, 'getProductosPorPlato']);
-
-    
-    Route::post('/pedido/{pedidoId}/platos', [PedidoPlatoController::class, 'store']);
-
-    // routes/api.php
-    Route::get('plato/categoria/{categoriaId}', [PlatoController::class, 'platosPorCategoria']);
-
-
-
-
-
-
-
-
 });
 
-Route::prefix("v1/auth")->group(function () {
-
-    Route::post("login", [AuthController::class, "funLogin"]);
-    Route::post("register", [AuthController::class, "funRegistro"]);
-
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get("profile", [AuthController::class, "funPerfil"]);
-        Route::post("logout", [AuthController::class, "funSalir"]);
-    });
-});
-
-// Ruta para manejo de acceso no autorizado
-Route::get("/no-autorizado", function () {
-    return response()->json(["message" => "No estás autorizado para ver esta página"], 403);
+/*
+|--------------------------------------------------------------------------
+| NO AUTORIZADO
+|--------------------------------------------------------------------------
+*/
+Route::get('/no-autorizado', function () {
+    return response()->json([
+        'message' => 'No estás autorizado para ver este recurso'
+    ], 403);
 })->name('login');
